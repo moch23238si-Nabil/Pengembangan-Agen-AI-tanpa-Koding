@@ -1,0 +1,183 @@
+{
+  "name": "Pembuatan Agen AI Chatbot Web dengan Data Google Sheets dan n8n Self-Host",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "82a3f445-3eed-47a3-b22f-d14a80162afc",
+      "name": "When chat message received",
+      "webhookId": "882c18a6-9757-4eb3-8260-728a8440898b"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1z1mddNnuZxDNbOIoa31h8q993gXUsSk0QxYKGSw6GTo",
+          "mode": "list",
+          "cachedResultName": "n8n 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z1mddNnuZxDNbOIoa31h8q993gXUsSk0QxYKGSw6GTo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z1mddNnuZxDNbOIoa31h8q993gXUsSk0QxYKGSw6GTo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        176
+      ],
+      "id": "13d52fda-0fb1-423a-afe8-f271d4eeb0f3",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fvxWJersic5dSYQ9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Anda adalah asisten chatbot layanan informasi produk pelatihan untuk NFA.\nGunakan data produk, deskripsi, dan harga dari Data Table yang tersedia.\n\nStruktur data dalam tabel adalah sebagai berikut:\n- Jenis Program Pelatihan (Contoh: Bootcamp, Skill Up)\n- Nama Pelatihan/Kursus di NFA (Nama produk)\n- Deskripsi Pelatihan/Kursus di NFA (Detail materi)\n- Harga/Biaya (Harga pelatihan)\n\nAturan Menjawab:\n1. Jika pengguna bertanya tentang daftar produk, gunakan tool \"Get_rows\" untuk mengambil semua data. Jangan mencoba memfilter dengan parameter 'column' atau 'condition' yang tidak didukung.\n2. Berikan informasi yang lengkap namun ringkas dalam bentuk poin-poin.\n3. Selalu sebutkan harga dengan format Rupiah yang mudah dibaca.\n4. Jika produk yang dicari tidak ada, tawarkan kategori yang tersedia (Bootcamp atau Skill Up).\n5. Bersikaplah ramah, profesional, dan gunakan Bahasa Indonesia yang baik."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d9ed8976-653b-421e-b51e-958e1123f212",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        416,
+        224
+      ],
+      "id": "d3c554b2-023b-430f-9a8e-63809947f434",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Vful1Sxy5RPLx6ek",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        240
+      ],
+      "id": "9ad46397-1afd-406e-a868-eb953a44d3f6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "u1kQV8P46HtoshrP",
+          "mode": "list",
+          "cachedResultName": "n8n 1",
+          "cachedResultUrl": "/projects/mjpPLVw78yD2ePLy/datatables/u1kQV8P46HtoshrP"
+        }
+      },
+      "type": "n8n-nodes-base.dataTableTool",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        224
+      ],
+      "id": "e00f56cd-9c9c-492f-ac1c-ed42bba2409f",
+      "name": "Get row(s) in Data table"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in Data table": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9b64af53-5ae8-4c64-83cb-41700607b924",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a5cf99436defecf6e93eb699d1be08f9fc424822e608e602b9181280c493ff8d"
+  },
+  "id": "Wevhvuu1aMvXLgLO",
+  "tags": []
+}
