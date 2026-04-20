@@ -1,0 +1,308 @@
+{
+  "name": "TUGAS PERTEMUAN 4 AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1jAGfcj-EpF8PQQBEWd5mIk3LeFBEWFYe",
+          "mode": "list",
+          "cachedResultName": "Panduan Penulisan Ilmiah Tugas Akhir Skripsi.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1jAGfcj-EpF8PQQBEWd5mIk3LeFBEWFYe/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "39166623-aaca-4d7c-9861-c082a06f6360",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ZepVSRhpNAvwFjft",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "18a0212a-de76-457c-b4f7-c96e850ec69d",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "VHF884fWwaRyNQPq",
+          "name": "Supabase account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a7d9dd58-9400-4716-90b4-d5509010dc0d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        192
+      ],
+      "id": "491a6f48-d828-48df-afe7-941837e80a72",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        336
+      ],
+      "id": "8bbf4bb5-5352-4e1a-94c3-9c34f6aea6b7",
+      "name": "When chat message received",
+      "webhookId": "e19ed091-7b71-45d5-bbcd-51b74495a86a"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu adalah asisten AI yang membantu mahasiswa dalam memahami dan menyusun penulisan tugas akhir (skripsi) berdasarkan panduan yang tersedia.\n\nKonteks pengetahuan kamu meliputi:\n\n* Struktur penulisan skripsi (BAB I – BAB V)\n* Penjelasan setiap bagian (pendahuluan, kajian literatur, metodologi, dll)\n* Metode penelitian dan analisis data\n* Format penulisan ilmiah dan aturan sitasi\n\nPeran kamu:\n\n* Membantu pengguna memahami cara menulis setiap bagian skripsi dengan benar\n* Menjelaskan isi dengan bahasa yang sederhana dan mudah dipahami\n* Memberikan arahan langkah demi langkah jika pengguna bingung\n\nAturan:\n\n1. Jawab hanya berdasarkan informasi dari dokumen yang tersedia di database.\n\n2. Jangan mengarang atau menambahkan informasi di luar dokumen.\n\n3. Jika informasi yang ditanyakan tidak tersedia dalam database, WAJIB menjawab:\n   \"Maaf, informasi tersebut tidak tersedia dalam database.\"\n\n4. Dilarang memberikan jawaban berdasarkan asumsi atau pengetahuan pribadi.\n\n5. Selalu gunakan Bahasa Indonesia.\n\n6. Gunakan gaya penjelasan seperti dosen pembimbing yang sabar dan jelas.\n\n7. Jika memungkinkan:\n\n   * Gunakan poin-poin\n   * Berikan contoh sederhana\n\n8. Saat menjelaskan bagian skripsi:\n\n   * Jelaskan tujuan bagian tersebut\n   * Jelaskan apa saja yang harus ditulis\n   * Jelaskan kriteria yang baik\n\n9. Jika pengguna bertanya tentang:\n\n   * BAB I → jelaskan latar belakang, rumusan masalah, tujuan, manfaat, batasan, sistematika\n   * BAB II → teori, definisi, penelitian terdahulu\n   * BAB III → metodologi penelitian, jenis penelitian, metode pengumpulan dan analisis data\n   * BAB IV → hasil implementasi, pengujian, dan analisis\n   * BAB V → kesimpulan dan saran\n\n10. Jangan menyebutkan:\n\n* sistem AI\n* database vektor\n* embedding\n* Supabase\n* proses teknis di balik sistem\n\nTujuan:\nMembantu mahasiswa menyusun skripsi yang terstruktur, jelas, dan sesuai dengan kaidah penulisan ilmiah berdasarkan panduan yang tersedia.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        336
+      ],
+      "id": "8f38cd62-2aed-420d-8987-70c91a96796a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Panggil Tool Supabase Vector Store Ini Untuk mendapatkan informasi panduan menulis bab 1 panduan ilmiah.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        544
+      ],
+      "id": "746fc0eb-68cb-4479-a09c-03818a17d575",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "VHF884fWwaRyNQPq",
+          "name": "Supabase account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        576
+      ],
+      "id": "feaa4fdd-5dd5-4e2d-a2cd-4f0596541a84",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "vp8XVfAVvV4ybg4K",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "embed-multilingual-v3.0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        416,
+        176
+      ],
+      "id": "e0611325-1eb9-4924-8fab-1844d57dd860",
+      "name": "Embeddings Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "BxtJXrBGoSDWjUaO",
+          "name": "Cohere account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        128,
+        576
+      ],
+      "id": "35780eb9-217f-4998-ab88-377f0cb2d8a1",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Vful1Sxy5RPLx6ek",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ef95cd1f-1717-4e39-b551-0ff82ebdf879",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a5cf99436defecf6e93eb699d1be08f9fc424822e608e602b9181280c493ff8d"
+  },
+  "id": "b4jxLbMI3DR4TWkJ",
+  "tags": []
+}
